@@ -11,18 +11,38 @@ submitted. Pure Python standard library only.
 
 import os
 
+# The competition allows at most 200 characters for the entry line.
+MAX_LINE_CHARS = 200
+
+# Name of the file the grader reads from the output directory.
+ENTRY_FILENAME = "entry.txt"
+
+# The entry itself: one line naming the dumbest thing my agent did today.
 LINE = (
     "My agent spent all morning building a perfect bounty entry, then its "
     "recording died mid-build and the work could never be submitted."
 )
 
 
-def main() -> None:
+def output_path() -> str:
+    """Return the full path of the entry file to write."""
     output_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
     os.makedirs(output_dir, exist_ok=True)
-    path = os.path.join(output_dir, "entry.txt")
+    return os.path.join(output_dir, ENTRY_FILENAME)
+
+
+def write_entry(path: str) -> None:
+    """Write the entry line, with its trailing newline, to *path*."""
     with open(path, "w", encoding="utf-8") as f:
         f.write(LINE + "\n")
+
+
+def main() -> None:
+    # Self-check: fail loudly rather than submit an over-long entry.
+    assert len(LINE) <= MAX_LINE_CHARS, (
+        f"entry line is {len(LINE)} chars, over the {MAX_LINE_CHARS} limit"
+    )
+    write_entry(output_path())
 
 
 if __name__ == "__main__":
